@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--https://stackoverflow.com/questions/28332596/how-to-mark-a-listitem-in-the-navigation-drawer-as-highlighted-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true" android:state_pressed="true" android:drawable="@color/colorPrimaryLight" />
+    <item android:state_enabled="true" android:state_focused="true" android:drawable="@color/colorPrimaryLight" />
+    <item android:state_enabled="true" android:state_selected="true" android:drawable="@color/colorPrimaryLight" />
+    <item android:state_enabled="true" android:state_activated="true" android:drawable="@color/colorPrimaryLight"/>
+    <item android:drawable="@color/background" />
+</selector>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Options to populate in the navigation drawer-->
+    <string-array name="drawer_options">
+        <item>@string/new_today</item>
+        <item>@string/international</item>
+        <item>@string/culture</item>
+        <item>@string/science</item>
+        <item>@string/sports</item>
+    </string-array>
+</resources>

@@ -1,0 +1,42 @@
+<resources>
+    <!-- App Name [CHAR LIMIT = 20]-->
+    <string name="app_name">News In!</string>
+
+    <!-- Search hint [CHAR LIMIT = 20]-->
+    <string name="search_hint">Search&#8230;</string>
+
+    <!-- Today news question [CHAR LIMIT = NONE]-->
+    <string name="new_today">What\'s new today?</string>
+
+    <!-- Text placeholders-->
+    <string name="title_placeholder" translatable="false">This is the title</string>
+    <string name="text_placeholder" translatable="false">Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit. Integer tempus, nibh nec auctor ultrices, ipsum leo porttitor eros, id
+        tristique arcu dui eu urna. Etiam facilisis molestie ultrices. Orci varius natoque penatibus
+        et magnis dis parturient montes, nascetur ridiculus mus. Integer consectetur nulla ac sapien
+        dignissim rutrum. Aliquam erat volutpat. Vestibulum lacinia nisl viverra varius malesuada.
+    </string>
+    <string name="date_placeholder" translatable="false">23 April, 2017</string>
+    <string name="subject_placeholder" translatable="false">Culture</string>
+
+    <!-- No results text [CHAR LIMIT = NONE]-->
+    <string name="no_results">No results found.</string>
+
+    <!-- No internet text [CHAR LIMIT = NONE]-->
+    <string name="no_internet">An error has occurred. Please check your internet connection and try
+        again in a while</string>
+
+    <!-- Toast message for no query inserted [CHAR LIMIT = NONE]-->
+    <string name="query_error">Please insert your query</string>
+
+    <!--Action button title [CHAR LIMIT = 10]-->
+    <string name="action_search">Search</string>
+
+    <!-- Options to populate in the navigation drawer [CHAR LIMIT = 20]-->
+    <string name="international">International</string>
+    <string name="culture">Culture</string>
+    <string name="science">Science</string>
+    <string name="sports">Sports</string>
+    <string name="drawer_open">Drawer is open</string>
+    <string name="drawer_close">Drawer is close</string>
+</resources>
