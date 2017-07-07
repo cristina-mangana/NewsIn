@@ -111,11 +111,7 @@ public class SearchActivity extends AppCompatActivity
         swipeRefreshLayout.setOnRefreshListener(this);
 
         // Check for network connectivity
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isConnected = checkInternetConnection();
 
         if (isConnected) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
@@ -131,6 +127,15 @@ public class SearchActivity extends AppCompatActivity
             // Show error message
             mEmptyTextView.setText(getString(R.string.no_internet));
         }
+    }
+
+    // Helper method to check for Internet connection
+    public boolean checkInternetConnection() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     // Get the intent from the search action in the toolbar
@@ -150,7 +155,20 @@ public class SearchActivity extends AppCompatActivity
             // Show the loading indicator
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
             progressBar.setVisibility(View.VISIBLE);
-            getLoaderManager().restartLoader(1, null, this);
+            // Check for network connectivity
+            boolean isConnected = checkInternetConnection();
+
+            if (isConnected) {
+                // Restart Loader to set new data
+                getLoaderManager().restartLoader(1, null, this);
+            } else {
+                // Hide the loading indicator
+                progressBar.setVisibility(View.GONE);
+                // Clear current data
+                mAdapter.clear();
+                // Show error message
+                mEmptyTextView.setText(getString(R.string.no_internet));
+            }
         } else {
             // If query comes from MainActivity
             query = getIntent().getExtras().getString("query");
@@ -240,7 +258,21 @@ public class SearchActivity extends AppCompatActivity
     @Override
     public void onRefresh(){
         swipeRefreshLayout.setRefreshing(true);
-        getLoaderManager().restartLoader(1, null, this);
         isRefreshing = true;
+        // Check for network connectivity
+        boolean isConnected = checkInternetConnection();
+
+        if (isConnected) {
+            // Restart Loader to set new data
+            getLoaderManager().restartLoader(1, null, this);
+        } else {
+            // Hide the refreshing indicator
+            swipeRefreshLayout.setRefreshing(false);
+            isRefreshing = false;
+            // Clear current data
+            mAdapter.clear();
+            // Show error message
+            mEmptyTextView.setText(getString(R.string.no_internet));
+        }
     }
 }

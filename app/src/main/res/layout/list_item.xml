@@ -7,6 +7,7 @@
     android:background="@drawable/list_item_background"
     android:orientation="horizontal">
 
+    <!--TODO: Play around with the scaleType attribute to get a better fit-->
     <ImageView
         android:id="@+id/new_image"
         android:layout_width="@dimen/listImageDimen"

@@ -65,10 +65,10 @@ public class NewAdapter extends ArrayAdapter<New> {
         // Get the {@link New} object located at this position in the list
         New currentNew = getItem(position);
 
-        // Get the imageLink to download the book cover image
+        // Get the imageLink to download the image
         String imageLink = currentNew.getImageLink();
-        // Download the image and attach it to the ImageView. If imageLink is null, no cover art is
-        // assign to that book or is not recognized as such. Then, a default cover is assigned.
+        // Download the image and attach it to the ImageView. If imageLink is null, no image is
+        // assign to that new or is not recognized as such. Then, a default image is assigned.
         if (imageLink != null && imageLink.length() > 0) {
             Picasso.with(getContext()).load(imageLink).into(holder.newImageView);
         } else {

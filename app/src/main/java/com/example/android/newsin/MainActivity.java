@@ -158,28 +158,34 @@ public class MainActivity extends AppCompatActivity
                     case 0:
                         // Refresh the data
                         requestUrl = NEWS_REQUEST_URL;
-                        restartLoader();
                         break;
                     case 1:
                         // Refresh the data
                         requestUrl = INTERNATIONAL_REQUEST_URL;
-                        restartLoader();
                         break;
                     case 2:
                         // Refresh the data
                         requestUrl = CULTURE_REQUEST_URL;
-                        restartLoader();
                         break;
                     case 3:
                         // Refresh the data
                         requestUrl = SCIENCE_REQUEST_URL;
-                        restartLoader();
                         break;
                     case 4:
                         // Refresh the data
                         requestUrl = SPORTS_REQUEST_URL;
-                        restartLoader();
                         break;
+                }
+                // Check for network connectivity
+                boolean isConnected = checkInternetConnection();
+                if (isConnected) {
+                    // Restart Loader to set new data
+                    restartLoader();
+                } else {
+                    // Clear current data
+                    mAdapter.clear();
+                    // Show error message
+                    mEmptyTextView.setText(getString(R.string.no_internet));
                 }
                 // Highlight the selected item
                 mDrawerList.setItemChecked(position, true);
@@ -237,11 +243,7 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout.setOnRefreshListener(this);
 
         // Check for network connectivity
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isConnected = checkInternetConnection();
 
         if (isConnected) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
@@ -306,6 +308,15 @@ public class MainActivity extends AppCompatActivity
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    // Helper method to check for Internet connection
+    public boolean checkInternetConnection() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
@@ -361,8 +372,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRefresh(){
         swipeRefreshLayout.setRefreshing(true);
-        restartLoader();
         isRefreshing = true;
+        // Check for network connectivity
+        boolean isConnected = checkInternetConnection();
+
+        if (isConnected) {
+            // Restart Loader to set new data
+            restartLoader();
+        } else {
+            // Hide the refreshing indicator
+            swipeRefreshLayout.setRefreshing(false);
+            isRefreshing = false;
+            // Clear current data
+            mAdapter.clear();
+            // Show error message
+            mEmptyTextView.setText(getString(R.string.no_internet));
+        }
     }
 
     // Restart the Loader to set new data
