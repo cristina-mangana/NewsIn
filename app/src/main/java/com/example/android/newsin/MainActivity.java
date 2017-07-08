@@ -38,44 +38,68 @@ public class MainActivity extends AppCompatActivity
 
     public static final String LOG_TAG = MainActivity.class.getName();
 
-    /** URL to fetch data from the The Guardian API */
+    /**
+     * URL to fetch data from the The Guardian API
+     */
     private String requestUrl = NEWS_REQUEST_URL;
 
-    /** URL for last news data */
+    /**
+     * URL for last news data
+     */
     private static final String NEWS_REQUEST_URL =
             "http://content.guardianapis.com/search?q=NOT%20%22Corrections%20and%20clarifications%22&show-fields=thumbnail%2CbodyText&order-by=newest&api-key=4c4e06be-a758-41ec-8ce2-863320d9a0a6";
 
-    /** URL for international news data */
+    /**
+     * URL for international news data
+     */
     private static final String INTERNATIONAL_REQUEST_URL =
             "http://content.guardianapis.com/search?section=world&show-fields=thumbnail%2CbodyText&api-key=4c4e06be-a758-41ec-8ce2-863320d9a0a6";
 
-    /** URL for culture news data */
+    /**
+     * URL for culture news data
+     */
     private static final String CULTURE_REQUEST_URL =
             "http://content.guardianapis.com/search?section=culture&show-fields=thumbnail%2CbodyText&api-key=4c4e06be-a758-41ec-8ce2-863320d9a0a6";
 
-    /** URL for science news data */
+    /**
+     * URL for science news data
+     */
     private static final String SCIENCE_REQUEST_URL =
             "http://content.guardianapis.com/search?section=science&show-fields=thumbnail%2CbodyText&api-key=4c4e06be-a758-41ec-8ce2-863320d9a0a6";
 
-    /** URL for sports news data */
+    /**
+     * URL for sports news data
+     */
     private static final String SPORTS_REQUEST_URL =
             "http://content.guardianapis.com/search?section=sport&show-fields=thumbnail%2CbodyText&api-key=4c4e06be-a758-41ec-8ce2-863320d9a0a6";
-    /** Adapter for the list of news */
+    /**
+     * Adapter for the list of news
+     */
     private NewAdapter mAdapter;
 
-    /** TextView that is displayed when the list is empty */
+    /**
+     * TextView that is displayed when the list is empty
+     */
     private TextView mEmptyTextView;
 
-    /** SwipeRefreshLayout to refresh the list of news */
+    /**
+     * SwipeRefreshLayout to refresh the list of news
+     */
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    /** Drawer toggle */
+    /**
+     * Drawer toggle
+     */
     private ActionBarDrawerToggle mDrawerToggle;
 
-    /** Head TextView with section title */
+    /**
+     * Head TextView with section title
+     */
     private TextView headTextView;
 
-    /** Boolean to know whether or not the layout is refreshing */
+    /**
+     * Boolean to know whether or not the layout is refreshing
+     */
     private boolean isRefreshing = false;
 
     @Override
@@ -176,17 +200,8 @@ public class MainActivity extends AppCompatActivity
                         requestUrl = SPORTS_REQUEST_URL;
                         break;
                 }
-                // Check for network connectivity
-                boolean isConnected = checkInternetConnection();
-                if (isConnected) {
-                    // Restart Loader to set new data
-                    restartLoader();
-                } else {
-                    // Clear current data
-                    mAdapter.clear();
-                    // Show error message
-                    mEmptyTextView.setText(getString(R.string.no_internet));
-                }
+                // Restart Loader to set new data
+                restartLoader();
                 // Highlight the selected item
                 mDrawerList.setItemChecked(position, true);
                 // Close the drawer
@@ -242,23 +257,13 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        // Check for network connectivity
-        boolean isConnected = checkInternetConnection();
+        // Get a reference to the LoaderManager, in order to interact with loaders.
+        LoaderManager loaderManager = getLoaderManager();
 
-        if (isConnected) {
-            // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
-
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
-            loaderManager.initLoader(0, null, this);
-        } else {
-            // Hide the loading indicator
-            progressBar.setVisibility(View.GONE);
-            // Show error message
-            mEmptyTextView.setText(getString(R.string.no_internet));
-        }
+        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+        // because this activity implements the LoaderCallbacks interface).
+        loaderManager.initLoader(0, null, this);
 
         // Listen to search in the EditText
         // https://stackoverflow.com/questions/2004344/how-do-i-handle-imeoptions-done-button-click
@@ -341,9 +346,17 @@ public class MainActivity extends AppCompatActivity
         progressBar.setVisibility(View.GONE);
         // Hide empty state text
         TextView emptyTextView = (TextView) findViewById(R.id.empty_text);
+        emptyTextView.setText(getString(R.string.no_results));
         emptyTextView.setVisibility(View.GONE);
         // Clear the adapter of previous data
         mAdapter.clear();
+
+        // Check for network connectivity
+        boolean isConnected = checkInternetConnection();
+        if (!isConnected) {
+            // Show error message
+            mEmptyTextView.setText(getString(R.string.no_internet));
+        }
 
         // If there is a valid list of {@link New}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
@@ -352,7 +365,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             // Set empty state text
             emptyTextView.setVisibility(View.VISIBLE);
-            emptyTextView.setText(getString(R.string.no_results));
         }
 
         // Hide the refresh icon
@@ -370,28 +382,14 @@ public class MainActivity extends AppCompatActivity
 
     // Listen to refreshes made by the user
     @Override
-    public void onRefresh(){
+    public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
         isRefreshing = true;
-        // Check for network connectivity
-        boolean isConnected = checkInternetConnection();
-
-        if (isConnected) {
-            // Restart Loader to set new data
-            restartLoader();
-        } else {
-            // Hide the refreshing indicator
-            swipeRefreshLayout.setRefreshing(false);
-            isRefreshing = false;
-            // Clear current data
-            mAdapter.clear();
-            // Show error message
-            mEmptyTextView.setText(getString(R.string.no_internet));
-        }
+        restartLoader();
     }
 
     // Restart the Loader to set new data
-    public void restartLoader(){
+    public void restartLoader() {
         getLoaderManager().restartLoader(0, null, this);
     }
 }

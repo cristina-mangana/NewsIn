@@ -29,20 +29,30 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<New>>, SwipeRefreshLayout.OnRefreshListener {
 
-    /** URL for news data from the The Guardian API */
+    /**
+     * URL for news data from the The Guardian API
+     */
     private static final String SEARCH_NEWS_REQUEST_URL =
             "http://content.guardianapis.com/search?show-fields=thumbnail%2CbodyText&api-key=4c4e06be-a758-41ec-8ce2-863320d9a0a6";
 
-    /** User's query */
+    /**
+     * User's query
+     */
     String query;
 
-    /** Adapter for the list of news */
+    /**
+     * Adapter for the list of news
+     */
     private NewAdapter mAdapter;
 
-    /** TextView that is displayed when the list is empty */
+    /**
+     * TextView that is displayed when the list is empty
+     */
     private TextView mEmptyTextView;
 
-    /** SwipeRefreshLayout to refresh the list of news */
+    /**
+     * SwipeRefreshLayout to refresh the list of news
+     */
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isRefreshing = false;
@@ -110,23 +120,13 @@ public class SearchActivity extends AppCompatActivity
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        // Check for network connectivity
-        boolean isConnected = checkInternetConnection();
+        // Get a reference to the LoaderManager, in order to interact with loaders.
+        LoaderManager loaderManager = getLoaderManager();
 
-        if (isConnected) {
-            // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
-
-            // Initialize the loader. Pass in the int ID constant defined above and pass in null for
-            // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
-            // because this activity implements the LoaderCallbacks interface).
-            loaderManager.initLoader(1, null, this);
-        } else {
-            // Hide the loading indicator
-            progressBar.setVisibility(View.GONE);
-            // Show error message
-            mEmptyTextView.setText(getString(R.string.no_internet));
-        }
+        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+        // because this activity implements the LoaderCallbacks interface).
+        loaderManager.initLoader(1, null, this);
     }
 
     // Helper method to check for Internet connection
@@ -152,23 +152,13 @@ public class SearchActivity extends AppCompatActivity
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
             mAdapter.clear();
+            // Hide empty state TextView
+            mEmptyTextView.setVisibility(View.GONE);
             // Show the loading indicator
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
             progressBar.setVisibility(View.VISIBLE);
-            // Check for network connectivity
-            boolean isConnected = checkInternetConnection();
-
-            if (isConnected) {
-                // Restart Loader to set new data
-                getLoaderManager().restartLoader(1, null, this);
-            } else {
-                // Hide the loading indicator
-                progressBar.setVisibility(View.GONE);
-                // Clear current data
-                mAdapter.clear();
-                // Show error message
-                mEmptyTextView.setText(getString(R.string.no_internet));
-            }
+            // Restart Loader to set new data
+            getLoaderManager().restartLoader(1, null, this);
         } else {
             // If query comes from MainActivity
             query = getIntent().getExtras().getString("query");
@@ -226,10 +216,17 @@ public class SearchActivity extends AppCompatActivity
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
         progressBar.setVisibility(View.GONE);
         // Hide empty state text
-        TextView emptyTextView = (TextView) findViewById(R.id.empty_text);
-        emptyTextView.setVisibility(View.GONE);
+        mEmptyTextView.setText(getString(R.string.no_results));
+        mEmptyTextView.setVisibility(View.GONE);
         // Clear the adapter of previous data
         mAdapter.clear();
+
+        // Check for network connectivity
+        boolean isConnected = checkInternetConnection();
+        if (!isConnected) {
+            // Show error message
+            mEmptyTextView.setText(getString(R.string.no_internet));
+        }
 
         // If there is a valid list of {@link New}s, then add them to the adapter's
         // data set. This will trigger the ListView to update.
@@ -237,8 +234,7 @@ public class SearchActivity extends AppCompatActivity
             mAdapter.addAll(news);
         } else {
             // Set empty state text
-            emptyTextView.setVisibility(View.VISIBLE);
-            emptyTextView.setText(getString(R.string.no_results));
+            mEmptyTextView.setVisibility(View.VISIBLE);
         }
 
         // Hide the refresh icon
@@ -256,23 +252,10 @@ public class SearchActivity extends AppCompatActivity
 
     // Listen to refreshes made by the user
     @Override
-    public void onRefresh(){
+    public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
         isRefreshing = true;
-        // Check for network connectivity
-        boolean isConnected = checkInternetConnection();
-
-        if (isConnected) {
-            // Restart Loader to set new data
-            getLoaderManager().restartLoader(1, null, this);
-        } else {
-            // Hide the refreshing indicator
-            swipeRefreshLayout.setRefreshing(false);
-            isRefreshing = false;
-            // Clear current data
-            mAdapter.clear();
-            // Show error message
-            mEmptyTextView.setText(getString(R.string.no_internet));
-        }
+        // Restart Loader to set new data
+        getLoaderManager().restartLoader(1, null, this);
     }
 }
